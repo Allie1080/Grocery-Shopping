@@ -60,7 +60,6 @@ public abstract class GroceryItem {
     }
     
     // Method Overloading
-    
     public void setQuantity(int quantity) {
         this.quantity = (int) Math.round(quantity);
 

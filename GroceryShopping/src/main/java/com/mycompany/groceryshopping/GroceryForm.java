@@ -1,24 +1,91 @@
 package com.mycompany.groceryshopping;
 
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import javax.swing.JOptionPane;
+
 public class GroceryForm extends javax.swing.JFrame {
-    
+
+    final String[] measurements = {"item", "mL", "L", "mg", "g", "kg", "cm", "m", "in"};
+    final Pattern datePattern = Pattern.compile("((18|19|20)[0-9]{2}[\\-.](0[13578]|1[02])[\\-.](0[1-9]|[12][0-9]|3[01]))|(18|19|20)[0-9]{2}[\\-.](0[469]|11)[\\-.](0[1-9]|[12][0-9]|30)|(18|19|20)[0-9]{2}[\\-.](02)[\\-.](0[1-9]|1[0-9]|2[0-8])|(((18|19|20)(04|08|[2468][048]|[13579][26]))|2000)[\\-.](02)[\\-.]29");
+
+ 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GroceryForm.class.getName());
     private GroceryItem currentItem = null;
+    
+    private boolean checkDate(String date) {
+         return datePattern.matcher(date).matches();
+        
+    }
 
+    public class IntegerVerifier extends InputVerifier {
+
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            try {
+                int value = Integer.parseInt(text);
+                
+                return value >= 1;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+    }
+
+    
+    public class DoubleVerifier extends InputVerifier {
+
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            try {
+                double value = Double.parseDouble(text);
+                
+                return value >= 0.5;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+    }
+    
+    
+    public class DateVerifier extends InputVerifier {
+        
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            
+            return checkDate(text);
+        }
+    }
+    
+    
     public GroceryForm() {
         initComponents();
-        
+
         //Hide Choices DONT DELETE
-        cbOrganic.setVisible(false); 
+        cbOrganic.setVisible(false);
         txtExpiry.setVisible(false);
         lblExpiry.setVisible(false);
+
         
-        //Expiry Stuff
         txtExpiry.setText("YYYY-MM-DD");
         txtExpiry.setForeground(new java.awt.Color(153, 153, 153));
+        txtExpiry.setInputVerifier(new DateVerifier()) ;
+        
+        txtBaseAmount.setInputVerifier(new DoubleVerifier());
+        txtAmount.setInputVerifier(new DoubleVerifier());
+        txtBasePrice.setInputVerifier(new DoubleVerifier());
+        
+        txtBaseAmount.setText("1");
         
         txtExpiry.addFocusListener(new java.awt.event.FocusAdapter() {
-    
+
             @Override //click in
             public void focusGained(java.awt.event.FocusEvent evt) {
                 if (txtExpiry.getText().equals("YYYY-MM-DD")) {
@@ -30,14 +97,17 @@ public class GroceryForm extends javax.swing.JFrame {
             @Override // click out
             public void focusLost(java.awt.event.FocusEvent evt) {
                 if (txtExpiry.getText().isEmpty()) {
-                    txtExpiry.setForeground(new java.awt.Color(153, 153, 153)); 
+                    txtExpiry.setForeground(new java.awt.Color(153, 153, 153));
                     txtExpiry.setText("YYYY-MM-DD");
                 }
             }
         });
-        
-        
-        
+
+        for (int index = 0; index < measurements.length; index++) {
+            comboMeasurement.addItem(measurements[index]);
+
+        }
+
     }
 
     /**
@@ -50,15 +120,15 @@ public class GroceryForm extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
+        labelItemName = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        txtPrice = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        txtQuantity = new javax.swing.JTextField();
+        labelBasePrice = new javax.swing.JLabel();
+        txtBasePrice = new javax.swing.JTextField();
+        labelQuantity = new javax.swing.JLabel();
+        txtAmount = new javax.swing.JTextField();
         rbProduce = new javax.swing.JRadioButton();
         rbPackaged = new javax.swing.JRadioButton();
-        jLabel4 = new javax.swing.JLabel();
+        title = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         btnCreateItem = new javax.swing.JButton();
         cbOrganic = new javax.swing.JCheckBox();
@@ -66,33 +136,35 @@ public class GroceryForm extends javax.swing.JFrame {
         lblExpiry = new javax.swing.JLabel();
         txtExpiry = new javax.swing.JFormattedTextField();
         jSeparator3 = new javax.swing.JSeparator();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        txtNewQtyInt = new javax.swing.JTextField();
-        txtNewQtyDecimal = new javax.swing.JTextField();
         jSeparator4 = new javax.swing.JSeparator();
-        jLabel8 = new javax.swing.JLabel();
-        btnSetQtyInt = new javax.swing.JButton();
-        btnSetQtyDouble = new javax.swing.JButton();
+        labelOutput = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        jSeparator6 = new javax.swing.JSeparator();
         jSeparator5 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAreaOutput = new javax.swing.JTextArea();
+        comboMeasurement = new javax.swing.JComboBox<>();
+        txtBaseAmount = new javax.swing.JTextField();
+        labelPer = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Item Name:");
+        labelItemName.setText("Item Name:");
 
-        jLabel2.setText("Base Price:");
+        labelBasePrice.setText("Base Price:");
 
-        txtPrice.addActionListener(new java.awt.event.ActionListener() {
+        txtBasePrice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPriceActionPerformed(evt);
+                txtBasePriceActionPerformed(evt);
             }
         });
 
-        jLabel3.setText("Quantity:");
+        labelQuantity.setText("Quantity:");
+
+        txtAmount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAmountActionPerformed(evt);
+            }
+        });
 
         buttonGroup1.add(rbProduce);
         rbProduce.setText("Produce Item");
@@ -110,7 +182,8 @@ public class GroceryForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("Grocery Shopping");
+        title.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        title.setText("Grocery Shopping");
 
         btnCreateItem.setText("CREATE ITEM");
         btnCreateItem.addActionListener(new java.awt.event.ActionListener() {
@@ -141,29 +214,25 @@ public class GroceryForm extends javax.swing.JFrame {
             }
         });
 
-        jLabel6.setText("New Qty (Integer)");
-
-        jLabel7.setText("New Qty (Decimal)");
-
-        jLabel8.setText("Output");
-
-        btnSetQtyInt.setText("Set");
-        btnSetQtyInt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSetQtyIntActionPerformed(evt);
-            }
-        });
-
-        btnSetQtyDouble.setText("Set");
-        btnSetQtyDouble.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSetQtyDoubleActionPerformed(evt);
-            }
-        });
+        labelOutput.setText("Output:");
 
         txtAreaOutput.setColumns(20);
         txtAreaOutput.setRows(5);
         jScrollPane1.setViewportView(txtAreaOutput);
+
+        comboMeasurement.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboMeasurementActionPerformed(evt);
+            }
+        });
+
+        txtBaseAmount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtBaseAmountActionPerformed(evt);
+            }
+        });
+
+        labelPer.setText("per");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -179,42 +248,32 @@ public class GroceryForm extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(rbPackaged))
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel1)
+                                        .addComponent(labelItemName)
                                         .addGap(5, 5, 5))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
+                                            .addComponent(labelQuantity, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(labelBasePrice, javax.swing.GroupLayout.Alignment.TRAILING))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtQuantity, javax.swing.GroupLayout.DEFAULT_SIZE, 303, Short.MAX_VALUE)
-                                    .addComponent(txtPrice)
-                                    .addComponent(txtName)))
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(btnCreateItem)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(btnCompute))
-                                .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(txtAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(comboMeasurement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel6)
+                                            .addComponent(txtBasePrice, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(txtNewQtyInt, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel7)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(txtNewQtyDecimal)))
-                                    .addGap(30, 30, 30)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(btnSetQtyDouble)
-                                        .addComponent(btnSetQtyInt))))
+                                            .addComponent(labelPer)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(txtBaseAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(labelOutput, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -222,25 +281,34 @@ public class GroceryForm extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(txtExpiry))
                                 .addComponent(cbOrganic, javax.swing.GroupLayout.Alignment.LEADING)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(8, Short.MAX_VALUE))
             .addComponent(jSeparator2)
-            .addComponent(jSeparator6)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(175, 175, 175))
-            .addComponent(jSeparator5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(title)
+                        .addGap(175, 175, 175))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnCreateItem)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCompute)
+                        .addGap(43, 43, 43))))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jSeparator5)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4)
-                .addGap(4, 4, 4)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(title)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -252,56 +320,45 @@ public class GroceryForm extends javax.swing.JFrame {
                             .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(3, 3, 3)
-                                .addComponent(jLabel1)))
+                                .addComponent(labelItemName)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(txtBasePrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelBasePrice))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(txtBaseAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(labelPer)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
+                            .addComponent(txtAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelQuantity)
+                            .addComponent(comboMeasurement, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(rbProduce)
                             .addComponent(rbPackaged))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cbOrganic)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(12, 12, 12)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtExpiry, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblExpiry))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txtNewQtyInt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSetQtyInt))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtNewQtyDecimal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSetQtyDouble))
-                .addGap(18, 18, 18)
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCreateItem)
                     .addComponent(btnCompute))
-                .addGap(16, 16, 16)
-                .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel8)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addComponent(labelOutput)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnSetQtyDoubleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetQtyDoubleActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSetQtyDoubleActionPerformed
 
     private void cbOrganicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOrganicActionPerformed
         // TODO add your handling code here:
@@ -329,85 +386,126 @@ public class GroceryForm extends javax.swing.JFrame {
 
     private void btnCreateItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateItemActionPerformed
         // TODO add your handling code here:
-        
+
         try {
-        String name = txtName.getText();
-        double price = Double.parseDouble(txtPrice.getText());
-        int quantity = Integer.parseInt(txtQuantity.getText());
-
-        if (name.isEmpty()) {
-            txtAreaOutput.setText("ERROR: Item Name cannot be empty.");
-            currentItem = null;
-            return;
-        }
-
-        if (rbProduce.isSelected()) {
-            boolean isOrganic = cbOrganic.isSelected();
-            // Inherit
-            currentItem = new ProduceItem(name, price, quantity, isOrganic);
-            txtAreaOutput.setText("SUCCESS! Created Produce Item \nItem Name: " + name + "\nOrganic: " + isOrganic + "\n");
+            String name = txtName.getText();
+            double basePrice = Double.parseDouble(txtBasePrice.getText());
+            int baseQuantity = Integer.parseInt(txtBaseAmount.getText());
+            double quantity = Double.parseDouble(txtAmount.getText());
+            String measurement = measurements[comboMeasurement.getSelectedIndex()];
+            measurement = (measurement == "item") ? "x" : measurement;
             
-        } else if (rbPackaged.isSelected()) {
-            String expiration = txtExpiry.getText(); 
-            // Inherit
-            currentItem = new PackagedItem(name, price, quantity, expiration);
-            txtAreaOutput.setText("SUCCESS! Created Packaged Item \nItem Name: " + name + "\nExpires: " + expiration + "\n");
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Item name cannot be empty", "ERROR", JOptionPane.ERROR_MESSAGE);
+                currentItem = null;
+
+                return;
+            }
+
+            if (rbProduce.isSelected()) {
+                boolean isOrganic = cbOrganic.isSelected();
+                // Inherit
+                currentItem = new ProduceItem(name, basePrice, measurement, baseQuantity, isOrganic);
+                
+                
+                if (quantity % 1 == 0) {
+                    currentItem.setQuantity((int) quantity);
+
+                } else {
+                    currentItem.setQuantity(quantity);
+
+                }            
+
+                txtAreaOutput.setText("--- CREATED PRODUCE ITEM ---\nItem Name: " + currentItem.getName() + "\nBase Price: " + ((currentItem.getBaseAmount() == 1) ? String.format("₱%.2f", currentItem.getBasePrice()) : String.format("₱%.2f per %d%s", currentItem.getBasePrice(), currentItem.getBaseAmount(), currentItem.getMeasurement())) + "\nQuantity: " + currentItem.getQuantityString() + "\nOrganic: " + (((ProduceItem) currentItem).isOrganic() ? "Yes" : "No") + "\n");
+
+            } else if (rbPackaged.isSelected()) {
+                String expirationDate = txtExpiry.getText();
+                
+                if (!checkDate(expirationDate)) {
+                    JOptionPane.showMessageDialog(null, "Please follow the format: YYYY-MM-DD", "DATE ERROR", JOptionPane.ERROR_MESSAGE);
+                    
+                    currentItem = null;
+                    
+                    return;
+                }
+
+                // Inherit
+                currentItem = new PackagedItem(name, basePrice, measurement, baseQuantity, expirationDate);
+
+                if (quantity % 1 == 0) {
+                    currentItem.setQuantity((int) quantity);
+
+                } else {
+                    currentItem.setQuantity(quantity);
+
+                }
+
+                txtAreaOutput.setText("--- CREATED PACKAGED ITEM ---\nItem Name: " + currentItem.getName() + "\nBase Price: " + ((currentItem.getBaseAmount() == 1) ? String.format("₱%.2f", currentItem.getBasePrice()) : String.format("₱%.2f per %d%s", currentItem.getBasePrice(), currentItem.getBaseAmount(), currentItem.getMeasurement())) + "\nQuantity: " + currentItem.getQuantityString() + "\nExpires: " + ((PackagedItem) currentItem).getExpirationDate() + "\n");
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select either 'Produce Item' or 'Packaged Item'", "ITEM TYPE ERROR", JOptionPane.ERROR_MESSAGE);
+                currentItem = null;
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter valid numbers for Base Price and Quantity.", "NUMBER ERROR", JOptionPane.ERROR_MESSAGE);
+            currentItem = null;
             
-        } else {
-            txtAreaOutput.setText("ERROR: Please select either 'Produce Item' or 'Packaged Item'.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage()+".", "ERROR", JOptionPane.ERROR_MESSAGE);
             currentItem = null;
         }
-
-    } catch (NumberFormatException e) {
-        txtAreaOutput.setText("ERROR: Please enter valid numbers for Base Price and Quantity.");
-        currentItem = null;
-    } catch (Exception e) {
-        txtAreaOutput.setText("An unexpected error occurred: " + e.getMessage());
-        currentItem = null;
-    }
     }//GEN-LAST:event_btnCreateItemActionPerformed
 
-    private void btnSetQtyIntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetQtyIntActionPerformed
+    private void txtBasePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBasePriceActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnSetQtyIntActionPerformed
-
-    private void txtPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPriceActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtPriceActionPerformed
+    }//GEN-LAST:event_txtBasePriceActionPerformed
 
     private void btnComputeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnComputeActionPerformed
         // TODO add your handling code here:
-        
+
         if (currentItem == null) {
-        txtAreaOutput.setText("ERROR: Please create an item first using the 'CREATE ITEM' button.");
-        return;
-    }
-    
-    // Polymorphism
-    double finalCost = currentItem.calculateTotalCost();
-    
-    // Display Output
-    String output = "--- CALCULATION SUCCESSFUL ---\n";
-    output += "Item Name: " + currentItem.getName() + "\n";
-    output += "Quantity: " + currentItem.getQuantity() + "\n";
-    output += "Final Total Cost: ₱" + String.format("%.2f", finalCost) + "\n";
-    
-    // Output (Additional Info)
-    if (currentItem instanceof ProduceItem) {
-        ProduceItem pItem = (ProduceItem) currentItem; 
-        output += "Organic Status: " + (pItem.isOrganic() ? "Item is Organic (2% increase applied)" : "Item is not Organic") + "\n";
-    } else if (currentItem instanceof PackagedItem) {
-        PackagedItem pkgItem = (PackagedItem) currentItem;
-        output += "Expiration Date: " + pkgItem.getExpirationDate() + "\n";
-    }
-    
-    txtAreaOutput.append("\n" + output);
+            JOptionPane.showMessageDialog(null, "No item to compute.", "NULL ITEM ERROR", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Polymorphism
+        double finalCost = currentItem.calculateTotalCost();
+
+        // Display Output
+        String output = "--- CALCULATION SUCCESSFUL ---\n";
+        output += "Item Name: " + currentItem.getName() + "\n";
+        output += "Quantity: " + currentItem.getQuantityString() + "\n";
+        output += "Total Cost: ₱" + String.format("%.2f", finalCost) + "\n";
+
+        // Output (Additional Info)
+        if (currentItem instanceof ProduceItem) {
+            ProduceItem pItem = (ProduceItem) currentItem;
+            output += "Organic: " + (pItem.isOrganic() ? "Yes (2% price increase applied)" : "No") + "\n";
+        } else if (currentItem instanceof PackagedItem) {
+            PackagedItem pkgItem = (PackagedItem) currentItem;
+            output += "Expiration Date: " + pkgItem.getExpirationDate() + "\n";
+        }
+
+        txtAreaOutput.append("\n" + output);
     }//GEN-LAST:event_btnComputeActionPerformed
+
+    private void comboMeasurementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboMeasurementActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboMeasurementActionPerformed
+
+    private void txtAmountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAmountActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAmountActionPerformed
+
+    private void txtBaseAmountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBaseAmountActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtBaseAmountActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main() {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -432,33 +530,29 @@ public class GroceryForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCompute;
     private javax.swing.JButton btnCreateItem;
-    private javax.swing.JButton btnSetQtyDouble;
-    private javax.swing.JButton btnSetQtyInt;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox cbOrganic;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
+    private javax.swing.JComboBox<String> comboMeasurement;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JLabel labelBasePrice;
+    private javax.swing.JLabel labelItemName;
+    private javax.swing.JLabel labelOutput;
+    private javax.swing.JLabel labelPer;
+    private javax.swing.JLabel labelQuantity;
     private javax.swing.JLabel lblExpiry;
     private javax.swing.JRadioButton rbPackaged;
     private javax.swing.JRadioButton rbProduce;
+    private javax.swing.JLabel title;
+    private javax.swing.JTextField txtAmount;
     private javax.swing.JTextArea txtAreaOutput;
+    private javax.swing.JTextField txtBaseAmount;
+    private javax.swing.JTextField txtBasePrice;
     private javax.swing.JFormattedTextField txtExpiry;
     private javax.swing.JTextField txtName;
-    private javax.swing.JTextField txtNewQtyDecimal;
-    private javax.swing.JTextField txtNewQtyInt;
-    private javax.swing.JTextField txtPrice;
-    private javax.swing.JTextField txtQuantity;
     // End of variables declaration//GEN-END:variables
 }

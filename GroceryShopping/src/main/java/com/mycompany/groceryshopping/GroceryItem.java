@@ -1,44 +1,87 @@
 package com.mycompany.groceryshopping;
 
-public class GroceryItem {
+public abstract class GroceryItem {
     private String name;
     private double basePrice;
-    private int quantity;
+    private int baseQuantity;
+    private double quantity;
+    private String measurement;
+    
+    
     //Constructor
-    public GroceryItem(String name, double basePrice, int quantity) {
+    GroceryItem(String name, double basePrice, String measurement, int baseQuantity) {
         this.name = name;
         this.basePrice = basePrice;
-        this.quantity = quantity;
-    }    
-    //Total Cost Calculation 
-    public double calculateTotalCost(){
-        return basePrice * quantity;
-    }
+        this.measurement = measurement;
+        this.baseQuantity = baseQuantity;
+        
+    }   
     
-    //Getters and Setters
+    // Total Cost Calculation 
+    
+    public abstract double calculateTotalCost();
+    
+    // Getters and Setters
+    
     public String getName() {
         return name;
     }
+    
     public void setName(String name) {
         this.name = name;
     }
+    
     public double getBasePrice() {
         return basePrice;
     }
+    
     public void setBasePrice(double basePrice) {
         this.basePrice = basePrice;
     }
-    public int getQuantity() {
+    
+    public int getBaseAmount() {
+        return baseQuantity;
+    }
+    
+    public void setBaseAmount(int baseAmount) {
+        this.baseQuantity = baseAmount;
+    }
+    
+    public double getAmount() {
         return quantity;
     }
     
-    //Not Overloaded Method
+    public String getMeasurement() {
+        return measurement;
+    }
+    
+    public void setMeasurement(String measurement) {
+        this.measurement = measurement;    
+    }
+    
+    // Method Overloading
+    
     public void setQuantity(int quantity) {
+        this.quantity = (int) Math.round(quantity);
+
+    }
+    
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
+
     }
-    // Overloaded Method
-    public void setQuantity(double newQuantity) {
-        this.quantity = (int) Math.round(newQuantity);
+     
+    
+    public String getQuantityString() {
+        if (quantity - Math.round(quantity) == 0) {
+            return String.format("%.0f%s", quantity, measurement);
+            
+        } else {
+            return String.format("%.2f%s", quantity, measurement);
+        
+        }
+        
     }
+    
 
 }

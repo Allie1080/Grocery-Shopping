@@ -11,5 +11,7 @@ public class GroceryShopping {
 
     public static void main(String[] args) {
         System.out.println("Our program is for grocery shopping");
+        
+        GroceryForm.main();
     }
 }

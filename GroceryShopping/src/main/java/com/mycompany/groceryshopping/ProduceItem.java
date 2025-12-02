@@ -4,8 +4,8 @@ public class ProduceItem extends GroceryItem {
     private boolean isOrganic;
     
     //Constructor
-    public ProduceItem(String name, double basePrice, int quantity, boolean isOrganic) {
-        super(name, basePrice, quantity);
+    ProduceItem(String name, double basePrice, String measurement, int baseQuantity, boolean isOrganic) {
+        super(name, basePrice, measurement, baseQuantity);
         this.isOrganic = isOrganic;
     }
 
@@ -21,11 +21,12 @@ public class ProduceItem extends GroceryItem {
     //Override CalculatorCost for 2% increase
     @Override
     public double calculateTotalCost() {
-        double currentBasePrice = getBasePrice();       
+        double currentPrice = getBasePrice() / getBaseAmount();
+        
         if (isOrganic) {
-            currentBasePrice *= 1.02; // this is 2%
+            currentPrice *= 1.02; // this is 2%
         }
         
-        return currentBasePrice * getQuantity();
+        return currentPrice * getAmount();
     }
 }

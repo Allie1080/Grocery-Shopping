@@ -4,8 +4,8 @@ public class PackagedItem extends GroceryItem {
     private String expirationDate;
     
     //Constructor
-    public PackagedItem(String name, double basePrice, int quantity, String expirationDate) {
-        super(name, basePrice, quantity);
+    PackagedItem(String name, double basePrice, String measurement, int baseQuantity, String expirationDate) {
+        super(name, basePrice, measurement, baseQuantity);
         this.expirationDate = expirationDate;
     }
 
@@ -18,12 +18,12 @@ public class PackagedItem extends GroceryItem {
         this.expirationDate = expirationDate;
     }
 
-    /* you might need it ???
+    
     @Override
     public double calculateTotalCost() {
-        return super.calculateTotalCost(); // this simply calls the GroceryItem implementation
+        return (getBasePrice() / getBaseAmount()) * getAmount();
     }
-    */
+    
     
   
 }

@@ -15,6 +15,7 @@ public class GroceryForm extends javax.swing.JFrame {
 
  
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GroceryForm.class.getName());
+    
     private GroceryItem currentItem = null;
     
     private boolean checkDate(String date) {
@@ -392,7 +393,7 @@ public class GroceryForm extends javax.swing.JFrame {
             int baseQuantity = Integer.parseInt(txtBaseAmount.getText());
             double quantity = Double.parseDouble(txtAmount.getText());
             String measurement = measurements[comboMeasurement.getSelectedIndex()];
-            measurement = (measurement == "item") ? "x" : measurement;
+            measurement = (measurement == "piece/pack") ? "x" : measurement;
             
             if (name.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Item name cannot be empty", "ERROR", JOptionPane.ERROR_MESSAGE);
